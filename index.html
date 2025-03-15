@@ -1,15 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stool Size Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .upload-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #imageUpload {
+            display: none;
+        }
+        .upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+        #canvas {
+            max-width: 100%;
+            margin: 20px auto;
+            display: block;
+            border: 1px solid #ddd;
+        }
+        #result {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload an Image</h2>
-    <input type="file" id="imageUpload" accept="image/*">
-    <canvas id="canvas"></canvas>
-    <p id="result"></p>
-    <script src="opencv.js"></script>  <!-- Load OpenCV.js -->
-    <script src="app.js"></script>  <!-- Load JavaScript -->
+    <div class="container">
+        <h1>Stool Size Detector</h1>
+        <div class="upload-section">
+            <label for="imageUpload" class="upload-btn">
+                Choose Image
+            </label>
+            <input type="file" id="imageUpload" accept="image/*">
+        </div>
+        <canvas id="canvas"></canvas>
+        <p id="result"></p>
+    </div>
+    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
