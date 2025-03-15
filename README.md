@@ -25,7 +25,7 @@ A web-based application that uses computer vision to detect and classify stool s
 3. View the classification result below the image
 
 ## Deployment
-This application is deployed using GitHub Pages and can be accessed at martinezworldwide.github.io/WebRTC/
+This application is deployed using GitHub Pages and can be accessed at https://martinezworldwide.github.io/WebRTC/
 
 ## License
 MIT License
