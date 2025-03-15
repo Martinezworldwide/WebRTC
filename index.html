@@ -22,14 +22,17 @@
             color: #333;
             text-align: center;
         }
-        .upload-section {
+        .upload-section, .calibration-section {
             text-align: center;
             margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
         }
         #imageUpload {
             display: none;
         }
-        .upload-btn {
+        .btn {
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
@@ -37,9 +40,16 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
-        .upload-btn:hover {
+        .btn:hover {
             background-color: #45a049;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
         #canvas {
             max-width: 100%;
@@ -55,19 +65,56 @@
             background-color: #e8f5e9;
             border-radius: 4px;
         }
+        .calibration-input {
+            margin: 10px 0;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+        .instructions {
+            font-size: 14px;
+            color: #666;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Stool Size Detector</h1>
+        
+        <div class="calibration-section">
+            <h2>Calibration</h2>
+            <p class="instructions">For accurate measurements, please calibrate using a reference object (e.g., a coin)</p>
+            <select id="referenceObject" class="calibration-input">
+                <option value="quarter">US Quarter (24.26mm)</option>
+                <option value="penny">US Penny (19.05mm)</option>
+                <option value="custom">Custom Size</option>
+            </select>
+            <div id="customSize" style="display: none;">
+                <input type="number" id="customSizeInput" class="calibration-input" placeholder="Size in mm">
+            </div>
+            <button id="calibrateBtn" class="btn btn-secondary">Calibrate</button>
+            <p id="calibrationStatus" class="instructions">Not calibrated</p>
+        </div>
+
         <div class="upload-section">
-            <label for="imageUpload" class="upload-btn">
+            <label for="imageUpload" class="btn">
                 Choose Image
             </label>
             <input type="file" id="imageUpload" accept="image/*">
+            <p class="instructions">Supported formats: JPG, PNG</p>
         </div>
+
         <canvas id="canvas"></canvas>
         <p id="result"></p>
+
+        <div class="instructions">
+            <h2>Bristol Stool Scale Reference</h2>
+            <p>Type 1-2: Separate hard lumps<br>
+               Type 3-4: Snake-like/sausage shape<br>
+               Type 5-7: Soft blobs/liquid</p>
+        </div>
     </div>
     <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
     <script src="app.js"></script>
