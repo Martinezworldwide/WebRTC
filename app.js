@@ -14,6 +14,17 @@ const REFERENCE_SIZES = {
 // Default pixels per mm (used when not calibrated)
 const DEFAULT_PIXELS_PER_MM = 5;
 
+// WebRTC configuration
+const webrtcConfig = {
+    video: {
+        facingMode: 'environment',
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        frameRate: { ideal: 30 }
+    },
+    audio: false
+};
+
 // DOM Elements
 const videoContainer = document.getElementById('videoContainer');
 const videoElement = document.getElementById('videoElement');
@@ -26,36 +37,87 @@ document.getElementById("calibrationToggle").addEventListener("click", function(
     document.querySelector(".container").classList.toggle("calibration-active");
 });
 
-// Camera handling
+// Camera handling with WebRTC
 async function startCamera() {
     try {
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: 'environment',
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
+        // Check for WebRTC support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('WebRTC is not supported in this browser');
+        }
+
+        // Get list of available video devices
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        // If there's a back camera, use it
+        if (videoDevices.length > 1) {
+            const backCamera = videoDevices.find(device => 
+                device.label.toLowerCase().includes('back') || 
+                device.label.toLowerCase().includes('rear')
+            );
+            if (backCamera) {
+                webrtcConfig.video.deviceId = { exact: backCamera.deviceId };
             }
-        });
+        }
+
+        // Start video stream
+        stream = await navigator.mediaDevices.getUserMedia(webrtcConfig);
         
+        // Apply constraints for best quality
+        const track = stream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities();
+        const settings = {
+            width: capabilities.width.max,
+            height: capabilities.height.max,
+            frameRate: capabilities.frameRate.max
+        };
+        await track.applyConstraints(settings);
+
+        // Set up video element
         videoElement.srcObject = stream;
+        await videoElement.play();
+
+        // Show camera UI
         videoContainer.style.display = 'block';
         captureBtn.style.display = 'block';
         closeCamera.style.display = 'block';
+
+        // Add orientation change handler
+        handleOrientationChange();
+        window.addEventListener('orientationchange', handleOrientationChange);
         
     } catch (err) {
+        console.error('Camera error:', err);
         alert("Could not access camera. Please check permissions or use image upload instead.");
-        console.error(err);
+    }
+}
+
+// Handle device orientation changes
+function handleOrientationChange() {
+    if (stream) {
+        const track = stream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities();
+        
+        if (capabilities.facingMode) {
+            const orientation = (window.orientation || 0) + 90;
+            videoElement.style.transform = `rotate(${orientation}deg)`;
+        }
     }
 }
 
 function stopCamera() {
     if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach(track => {
+            track.stop();
+            track.enabled = false;
+        });
         stream = null;
+        videoElement.srcObject = null;
     }
     videoContainer.style.display = 'none';
     captureBtn.style.display = 'none';
     closeCamera.style.display = 'none';
+    window.removeEventListener('orientationchange', handleOrientationChange);
 }
 
 // Camera button click handler
@@ -64,20 +126,29 @@ document.getElementById("cameraBtn").addEventListener("click", startCamera);
 // Close camera button handler
 closeCamera.addEventListener("click", stopCamera);
 
-// Capture button handler
+// Capture button handler with WebRTC
 captureBtn.addEventListener("click", function() {
+    if (!stream) return;
+
     const canvas = document.getElementById("canvas");
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
+    const track = stream.getVideoTracks()[0];
+    const settings = track.getSettings();
+    
+    // Set canvas size to match video dimensions
+    canvas.width = settings.width;
+    canvas.height = settings.height;
     const ctx = canvas.getContext("2d");
     
-    // Flip horizontally if using front camera
-    if (stream.getVideoTracks()[0].getSettings().facingMode === "user") {
+    // Handle mirroring if using front camera
+    if (settings.facingMode === "user") {
         ctx.scale(-1, 1);
         ctx.translate(-canvas.width, 0);
     }
     
+    // Capture frame with proper orientation
     ctx.drawImage(videoElement, 0, 0);
+    
+    // Stop camera and process image
     stopCamera();
     processImage(canvas);
 });
@@ -254,6 +325,11 @@ function processImage(canvas) {
             let bssType = "";
             let sizeInfo = "";
 
+            // Additional color analysis to detect water
+            let meanColor = new cv.Scalar(0, 0, 0, 0);
+            cv.meanStdDev(src, meanColor);
+            let isLikelyWater = meanColor[0] > 200 || meanColor[2] > 200; // High blue or brightness values indicate water
+
             // Filter and analyze contours
             for (let i = 0; i < contours.size(); i++) {
                 let contour = contours.get(i);
@@ -267,15 +343,35 @@ function processImage(canvas) {
                     let length = Math.max(rect.width, rect.height);
                     let width = Math.min(rect.width, rect.height);
                     let aspectRatio = length / width;
+
+                    // Get ROI (Region of Interest) for color analysis
+                    let roi = src.roi(rect);
+                    let roiMean = new cv.Scalar(0, 0, 0, 0);
+                    cv.meanStdDev(roi, roiMean);
+                    roi.delete();
+
+                    // Color-based filtering (typical stool colors are browns/yellows)
+                    let isValidColor = (
+                        roiMean[0] > 50 && roiMean[0] < 200 && // R channel
+                        roiMean[1] > 40 && roiMean[1] < 180 && // G channel
+                        roiMean[2] < 150                        // B channel
+                    );
                     
-                    validContours.push({
-                        area: area,
-                        contour: contour,
-                        roundness: roundness,
-                        length: length,
-                        width: width,
-                        aspectRatio: aspectRatio
-                    });
+                    // More strict validation criteria
+                    if (isValidColor && !isLikelyWater && 
+                        area > (minArea * 2) && // Increase minimum area requirement
+                        roundness > 0.3 && roundness < 0.95) { // More specific roundness criteria
+                        
+                        validContours.push({
+                            area: area,
+                            contour: contour,
+                            roundness: roundness,
+                            length: length,
+                            width: width,
+                            aspectRatio: aspectRatio,
+                            meanColor: roiMean
+                        });
+                    }
                 }
             }
 

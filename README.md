@@ -1,90 +1,99 @@
-# Stool Size Detector
+# Stool Size Detection Web App
 
-A mobile-friendly web application that uses computer vision to detect and classify stool sizes from images. This application uses OpenCV.js for image processing and analysis, with optional calibration for precise measurements.
+A mobile-friendly web application for analyzing and measuring stool size using computer vision technology.
 
-## Key Features
-- 📱 Mobile-first design
-- 📸 Direct camera access for instant photos
-- 🔄 Real-time image processing
-- 📏 Optional calibration for precise measurements
-- 📊 Bristol Stool Scale classification
-- 📱 Works offline (no server required)
+## 🌟 Key Features
 
-## Quick Start
-1. Visit https://martinezworldwide.github.io/WebRTC/
-2. Allow camera access if prompted
-3. Choose one of two options:
-   - 📸 "Take Photo" - Uses your device's camera
-   - 📤 "Upload Image" - Select an image from your device
+- 📱 **Advanced Mobile Camera Integration**
+  - WebRTC-powered camera handling for better performance
+  - Automatic back camera detection and selection
+  - Proper orientation handling on mobile devices
+  - Real-time camera preview with low latency
 
-## Measurement Options
-### Quick Measurement (No Calibration)
-- Just take a photo or upload an image
-- Get immediate size estimates and Bristol Scale classification
-- Measurements will be approximate
+- 📏 **Accurate Measurements**
+  - Optional calibration using common reference objects
+  - Support for custom size references
+  - Real-time size calculations in millimeters
+  - Bristol Stool Scale classification
 
-### Precise Measurement (With Calibration)
-1. Click "Optional Calibration"
-2. Select reference object:
-   - US Quarter (24.26mm)
-   - US Penny (19.05mm)
-   - Custom size object
-3. Take photo/upload image with reference object
-4. Click two points on your reference object
-5. Get precise measurements
+- 🔍 **Smart Detection**
+  - Advanced color analysis to reduce false positives
+  - Intelligent shape recognition
+  - Water detection to avoid misclassification
+  - Automatic size classification (Small/Medium/Large)
 
-## Results Provided
-- Size Classification (Small/Medium/Large)
-- Length and width in millimeters
-- Bristol Stool Scale type
-- Shape analysis
-- Visual contour detection
+- 🛡️ **Privacy First**
+  - All processing happens locally in your browser
+  - No images are uploaded or stored
+  - No external server communication
+  - Completely offline capable
 
-## Mobile Features
+## 📱 Mobile Features
+
 - Optimized for smartphones and tablets
+- Automatic camera orientation adjustment
 - Touch-friendly interface
-- Direct camera integration
-- Responsive design
-- Works in any orientation
+- Responsive design for all screen sizes
+- Support for both front and back cameras
+- Efficient memory usage for mobile devices
 
-## Technical Details
-### Technologies Used
-- HTML5 & Modern CSS
-- JavaScript (ES6+)
-- OpenCV.js
-- MediaDevices API for camera access
-- Canvas API for image processing
+## 🚀 Quick Start
 
-### Browser Support
-- Chrome (recommended)
-- Safari
-- Firefox
-- Edge
+1. Open the web app in your mobile browser
+2. Choose between:
+   - 📸 Take Photo: Opens camera with live preview
+   - 📤 Upload Image: Select from your gallery
+3. Optional: Calibrate using a reference object (quarter/penny)
+4. View results including:
+   - Size classification
+   - Length and width measurements
+   - Bristol Scale type
+   - Shape analysis
 
-### Installation
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Martinezworldwide/WebRTC.git
-   ```
-2. Open index.html in a modern web browser
-3. No additional setup required
+## 📏 Measurement Options
 
-## Latest Updates
-- Added mobile-first design
-- Implemented direct camera access
-- Made calibration optional
-- Added touch-friendly interface
-- Improved error handling
-- Enhanced visual feedback
-- Added responsive sizing
+### Quick Measurement
+- Use without calibration for approximate sizes
+- Automatic size classification
+- Basic measurements in millimeters
 
-## Deployment
-This application is deployed using GitHub Pages and can be accessed at https://martinezworldwide.github.io/WebRTC/
+### Precise Measurement
+1. Click "Optional Calibration"
+2. Select a reference object (quarter/penny) or enter custom size
+3. Mark two points on the reference object
+4. Get precise measurements calibrated to your image
 
-## Privacy
-- All processing is done locally in your browser
-- No images are uploaded to any server
-- No data is stored or transmitted
+## 🔧 Technical Details
 
-## License
-MIT License
+- **Technologies Used**
+  - WebRTC for advanced camera handling
+  - OpenCV.js for image processing
+  - Pure JavaScript (No frameworks required)
+  - HTML5 Canvas for rendering
+
+- **Browser Support**
+  - Chrome (Recommended for best camera support)
+  - Firefox
+  - Safari
+  - Edge
+
+## 🆕 Latest Updates
+
+- Added WebRTC implementation for better camera handling
+- Improved mobile device orientation support
+- Enhanced color analysis to reduce false positives
+- Added water detection to prevent misclassification
+- Optimized performance for mobile devices
+- Improved error handling and user feedback
+
+## 🔒 Privacy
+
+This application processes all images locally in your browser. No images or data are ever uploaded to any server. The app can work completely offline after initial load.
+
+## 📝 License
+
+MIT License - Feel free to use and modify as needed.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
