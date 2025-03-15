@@ -2,114 +2,186 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stool Size Detector</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background-color: #f5f5f5;
+            line-height: 1.6;
         }
+
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 100%;
+            padding: 15px;
+            margin: 0 auto;
         }
-        h1, h2 {
+
+        .card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        h1 {
             color: #333;
             text-align: center;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
-        .upload-section, .calibration-section {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
+
+        h2 {
+            color: #444;
+            font-size: 18px;
+            margin-bottom: 10px;
         }
-        #imageUpload {
-            display: none;
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
         }
+
         .btn {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            margin: 5px;
+            flex: 1;
+            min-width: 120px;
+            max-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn:hover {
-            background-color: #45a049;
-        }
+
         .btn-secondary {
             background-color: #6c757d;
         }
-        .btn-secondary:hover {
-            background-color: #5a6268;
+
+        .btn:active {
+            transform: scale(0.98);
         }
+
         #canvas {
+            width: 100%;
             max-width: 100%;
-            margin: 20px auto;
-            display: block;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 8px;
             border: 1px solid #ddd;
         }
+
         #result {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-            padding: 10px;
+            text-align: left;
+            font-size: 16px;
+            margin-top: 15px;
+            padding: 15px;
             background-color: #e8f5e9;
-            border-radius: 4px;
+            border-radius: 8px;
+            word-wrap: break-word;
         }
-        .calibration-input {
-            margin: 10px 0;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100px;
+
+        .calibration-section {
+            display: none;
         }
-        .instructions {
-            font-size: 14px;
-            color: #666;
-            margin: 10px 0;
+
+        .calibration-active .calibration-section {
+            display: block;
+        }
+
+        #calibrationToggle {
+            background-color: #2196F3;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+                min-width: 100px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            #result {
+                font-size: 14px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Stool Size Detector</h1>
-        
-        <div class="calibration-section">
-            <h2>Calibration</h2>
-            <p class="instructions">For accurate measurements, please calibrate using a reference object (e.g., a coin)</p>
-            <select id="referenceObject" class="calibration-input">
-                <option value="quarter">US Quarter (24.26mm)</option>
-                <option value="penny">US Penny (19.05mm)</option>
-                <option value="custom">Custom Size</option>
-            </select>
-            <div id="customSize" style="display: none;">
-                <input type="number" id="customSizeInput" class="calibration-input" placeholder="Size in mm">
+        <div class="card">
+            <h1>Stool Size Detector</h1>
+            
+            <div class="button-group">
+                <button id="cameraBtn" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/>
+                        <path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                    </svg>
+                    Take Photo
+                </button>
+                <label for="imageUpload" class="btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Upload Image
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" capture="environment" style="display: none;">
             </div>
-            <button id="calibrateBtn" class="btn btn-secondary">Calibrate</button>
-            <p id="calibrationStatus" class="instructions">Not calibrated</p>
+
+            <button id="calibrationToggle" class="btn btn-secondary">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                </svg>
+                Optional Calibration
+            </button>
+
+            <div class="calibration-section">
+                <select id="referenceObject" class="btn btn-secondary">
+                    <option value="quarter">US Quarter (24.26mm)</option>
+                    <option value="penny">US Penny (19.05mm)</option>
+                    <option value="custom">Custom Size</option>
+                </select>
+                <div id="customSize" style="display: none;">
+                    <input type="number" id="customSizeInput" placeholder="Size in mm" style="padding: 8px; margin: 10px 0;">
+                </div>
+                <p id="calibrationStatus" style="margin: 10px 0; color: #666;">Not calibrated</p>
+            </div>
+
+            <canvas id="canvas"></canvas>
+            <p id="result">Upload an image or take a photo to begin analysis</p>
         </div>
 
-        <div class="upload-section">
-            <label for="imageUpload" class="btn">
-                Choose Image
-            </label>
-            <input type="file" id="imageUpload" accept="image/*">
-            <p class="instructions">Supported formats: JPG, PNG</p>
-        </div>
-
-        <canvas id="canvas"></canvas>
-        <p id="result"></p>
-
-        <div class="instructions">
+        <div class="card">
             <h2>Bristol Stool Scale Reference</h2>
             <p>Type 1-2: Separate hard lumps<br>
                Type 3-4: Snake-like/sausage shape<br>

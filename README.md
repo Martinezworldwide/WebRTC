@@ -1,65 +1,90 @@
 # Stool Size Detector
 
-A web-based application that uses computer vision to detect and classify stool sizes from images. This application uses OpenCV.js for image processing and analysis, with accurate measurements through calibration.
+A mobile-friendly web application that uses computer vision to detect and classify stool sizes from images. This application uses OpenCV.js for image processing and analysis, with optional calibration for precise measurements.
 
-## Features
-- Upload images for analysis
-- Real-time image processing
-- Accurate size measurements in millimeters
-- Calibration system using reference objects
-- Bristol Stool Scale classification
-- Size classification (Small, Medium, Large)
-- Browser-based processing (no server required)
+## Key Features
+- 📱 Mobile-first design
+- 📸 Direct camera access for instant photos
+- 🔄 Real-time image processing
+- 📏 Optional calibration for precise measurements
+- 📊 Bristol Stool Scale classification
+- 📱 Works offline (no server required)
 
-## Technologies Used
-- HTML5
-- JavaScript
+## Quick Start
+1. Visit https://martinezworldwide.github.io/WebRTC/
+2. Allow camera access if prompted
+3. Choose one of two options:
+   - 📸 "Take Photo" - Uses your device's camera
+   - 📤 "Upload Image" - Select an image from your device
+
+## Measurement Options
+### Quick Measurement (No Calibration)
+- Just take a photo or upload an image
+- Get immediate size estimates and Bristol Scale classification
+- Measurements will be approximate
+
+### Precise Measurement (With Calibration)
+1. Click "Optional Calibration"
+2. Select reference object:
+   - US Quarter (24.26mm)
+   - US Penny (19.05mm)
+   - Custom size object
+3. Take photo/upload image with reference object
+4. Click two points on your reference object
+5. Get precise measurements
+
+## Results Provided
+- Size Classification (Small/Medium/Large)
+- Length and width in millimeters
+- Bristol Stool Scale type
+- Shape analysis
+- Visual contour detection
+
+## Mobile Features
+- Optimized for smartphones and tablets
+- Touch-friendly interface
+- Direct camera integration
+- Responsive design
+- Works in any orientation
+
+## Technical Details
+### Technologies Used
+- HTML5 & Modern CSS
+- JavaScript (ES6+)
 - OpenCV.js
-- Canvas API
+- MediaDevices API for camera access
+- Canvas API for image processing
 
-## Setup and Installation
-1. Clone this repository
-2. Ensure you have the OpenCV.js file in your project directory
-3. Open index.html in a modern web browser
+### Browser Support
+- Chrome (recommended)
+- Safari
+- Firefox
+- Edge
 
-## Usage
-1. **Calibration (Required)**:
-   - Select a reference object (US Quarter, US Penny, or custom size)
-   - Click the "Calibrate" button
-   - Click two points on your reference object to measure its diameter
-   - Wait for calibration confirmation
+### Installation
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/Martinezworldwide/WebRTC.git
+   ```
+2. Open index.html in a modern web browser
+3. No additional setup required
 
-2. **Image Analysis**:
-   - Click the "Choose Image" button to select an image
-   - The application will automatically process the image
-   - View the classification results and measurements
-
-## Measurement System
-- **Calibration**: Uses common coins or custom objects as reference
-  - US Quarter (24.26mm)
-  - US Penny (19.05mm)
-  - Custom size option available
-
-- **Size Classifications**:
-  - Small: < 30mm
-  - Medium: 30-50mm
-  - Large: > 50mm
-
-## Bristol Stool Scale Classification
-- **Type 1-2**: Separate hard lumps
-- **Type 3-4**: Snake-like/sausage shape
-- **Type 5-7**: Soft blobs/liquid
-
-## Features Added in Latest Update
-- Calibration system for accurate measurements
-- Reference object selection
-- Measurement display in millimeters
-- Improved contour detection
-- Enhanced visualization with measurement overlay
-- Bristol Stool Scale reference guide
+## Latest Updates
+- Added mobile-first design
+- Implemented direct camera access
+- Made calibration optional
+- Added touch-friendly interface
+- Improved error handling
+- Enhanced visual feedback
+- Added responsive sizing
 
 ## Deployment
 This application is deployed using GitHub Pages and can be accessed at https://martinezworldwide.github.io/WebRTC/
+
+## Privacy
+- All processing is done locally in your browser
+- No images are uploaded to any server
+- No data is stored or transmitted
 
 ## License
 MIT License
