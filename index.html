@@ -269,9 +269,9 @@
         <button id="closeCamera">×</button>
     </div>
 
-    <div class="loading">Processing image...</div>
+    <div class="loading">Initializing image processing...</div>
 
-    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
+    <script async src="https://docs.opencv.org/4.5.4/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
     <script src="app.js"></script>
 </body>
 </html>

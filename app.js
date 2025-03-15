@@ -4,6 +4,14 @@ let pixelsPerMm = null;
 let calibrationObject = null;
 let stream = null;
 let isProcessing = false;
+let isOpenCVReady = false;
+
+// OpenCV.js initialization
+function onOpenCvReady() {
+    isOpenCVReady = true;
+    console.log('OpenCV.js is ready');
+    document.querySelector('.loading').textContent = 'Ready';
+}
 
 // Reference object sizes in mm
 const REFERENCE_SIZES = {
@@ -249,6 +257,14 @@ function startCalibration(referenceSize) {
 document.getElementById("imageUpload").addEventListener("change", function (event) {
     if (!event.target.files || !event.target.files[0]) return;
     
+    if (!isOpenCVReady) {
+        alert("Please wait for the image processing system to initialize...");
+        return;
+    }
+
+    loadingElement.style.display = 'flex';
+    loadingElement.textContent = 'Loading image...';
+    
     let img = new Image();
     img.src = URL.createObjectURL(event.target.files[0]);
 
@@ -270,18 +286,45 @@ document.getElementById("imageUpload").addEventListener("change", function (even
         canvas.height = height;
         ctx.drawImage(img, 0, 0, width, height);
 
+        // Clean up the object URL
+        URL.revokeObjectURL(img.src);
+        
         processImage(canvas);
+    };
+
+    img.onerror = function() {
+        loadingElement.style.display = 'none';
+        alert("Error loading image. Please try a different image.");
+        URL.revokeObjectURL(img.src);
     };
 });
 
 function processImage(canvas) {
+    if (!isOpenCVReady) {
+        alert("Please wait for the image processing system to initialize...");
+        return;
+    }
+
     if (isProcessing) return;
     isProcessing = true;
     loadingElement.style.display = 'flex';
+    loadingElement.textContent = 'Processing image...';
 
+    // Wrap in setTimeout to allow UI to update
     setTimeout(() => {
         try {
-            let src = cv.imread(canvas);
+            // Create a copy of the canvas to prevent modifications to original
+            let tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            let tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+
+            let src = cv.imread(tempCanvas);
+            if (src.empty()) {
+                throw new Error("Failed to load image data");
+            }
+
             let dst = new cv.Mat();
             let gray = new cv.Mat();
             let blur = new cv.Mat();
@@ -445,10 +488,19 @@ function processImage(canvas) {
 
         } catch (err) {
             console.error('Error in processing:', err);
-            document.getElementById("result").innerHTML = "Error processing image. Please try again.";
+            document.getElementById("result").innerHTML = 
+                `Error processing image: ${err.message || 'Please try again'}.<br>
+                Make sure the image is clear and well-lit.`;
+            
+            // Show original image on error
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(videoElement, 0, 0);
         } finally {
             isProcessing = false;
             loadingElement.style.display = 'none';
         }
-    }, 100); // Small delay to ensure loading indicator shows
+    }, 100);
 }
+
+// Add OpenCV.js ready callback to window
+window.onOpenCvReady = onOpenCvReady;
